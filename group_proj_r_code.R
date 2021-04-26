@@ -8,6 +8,18 @@ data_clean$Developer =  as.factor(data_clean$Developer)
 data_clean$Rating =  as.factor(data_clean$Rating)
 data_clean$User_Score =  as.double(data_clean$User_Score)
 
+## removing these observations have these years of release because when spliting the training and
+## testing data, one observation ends in one and there isn't another observation for the other.
+## then the predict method doesn't work at all. Have the table showing how much observations are in
+## each year so that we decide which years we are going to remove.
+
+data_clean = data_clean[data_clean$Year_of_Release != "1985",]
+data_clean = data_clean[data_clean$Year_of_Release != "1988",]
+data_clean = data_clean[data_clean$Year_of_Release != "1992",]
+data_clean = data_clean[data_clean$Year_of_Release != "1994",]
+
+table(data_clean$Year_of_Release)
+
 # Linear model ------------------------------------------------------------
 
 
@@ -37,9 +49,9 @@ data_lm_stat
 step(data_lm) 
 
 # getting mse for linear model
-data_lm_yhat = predict.lm(data_lm, newdata = data_global[-train,])
-data_lm_test = data_global[-train,"Global_Sales"]
-lm_mse = mean((data_lm_yhat-data_lm_test$Global_Sales)^2)
+test <- data_global[-train,]
+data_lm_yhat = predict.lm(data_lm, newdata = test, na.rm=TRUE)
+lm_mse = mean((data_lm_yhat-test$Global_Sales)^2)
 lm_mse
 
 # Random Forest Model -----------------------------------------------------
