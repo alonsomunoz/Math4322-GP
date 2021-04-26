@@ -43,5 +43,6 @@ data_success = data_global
 data_success$Success <- ifelse(data_success$Global_Sales > 1, 1,0)
 data_success$Success = as.factor(data_success$Success)
 
-data_glm = glm(Success~., data= data_success, family = "binomial")
+data_glm = glm(Success~.-Global_Sales, data= data_success, family = "binomial")
 summary(data_glm)
+plot(data_glm)
