@@ -35,16 +35,31 @@ data_lm = lm(Global_Sales~., data = data_global,subset = train)
 summary(data_lm)
 plot(data_lm)
 
-## Converted the global_sales to log
+# Converted the global_sales to log(global_sales)
 data_lm = lm(log(Global_Sales)~., data = data_global,subset = train)
 summary(data_lm)
 plot(data_lm)
 
-# getting mse for linear model
+# getting mse for linear model when using log(global_sales)
 data_lm_yhat = predict.lm(data_lm, newdata = data_global[-train,])
 data_lm_test = data_global[-train,"Global_Sales"]
 lm_mse = mean((data_lm_yhat-data_lm_test$Global_Sales)^2)
 lm_mse
+
+
+# trying to do some polynomials for numeric predictors just critic score
+ploy_lm_mse = rep(0,5)
+for(i in 1:5){
+  train = sample(1:nrow(data_global),nrow(data_global)*.80)
+  poly_lm = lm(log(Global_Sales)~Platform+Year_of_Release+Genre+Rating+User_Score+poly(Critic_Score,i), data = data_global, subset = train)
+  ##plot(poly_lm)
+  data_lm_yhat = predict.lm(data_lm, newdata = data_global[-train,])
+  data_lm_test = data_global[-train,"Global_Sales"]
+  lm_mse = mean((data_lm_yhat-data_lm_test$Global_Sales)^2)
+  ploy_lm_mse[i] = lm_mse
+}
+ploy_lm_mse
+# trying polynominals
 
 # Trying to use step function ---------------------------------------------
 
