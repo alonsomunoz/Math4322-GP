@@ -14,9 +14,9 @@ data_clean$User_Score =  as.double(data_clean$User_Score)
 ## 1 removes Name, 5 removes Publisher, 6 removes na sales, 7 removes eu sales
 ##, 8 removes jp sales, 9 removes other sales,12 removes critic count
 ##, 14 removes user count, 15 removes developer
-data_global = subset(data_clean, select = -c(1,5,6,7,8,9,15))
+data_global = subset(data_clean, select = -c(1,5,6,7,8,9,12,14,15))
 par(mfrow = c(2,2))
-set.seed(1)
+set.seed(1241)
 
 # Predictors  ---  Critic_Score+Platform+Genre+Year_of_Release+Publisher
 train = sample(1:nrow(data_global),nrow(data_global)*.80)
@@ -33,25 +33,26 @@ data_lm_stat = cbind(data_lm_res$rsq, data_lm_res$adjr2, data_lm_res$cp,data_lm_
 colnames(data_lm_stat) = c("rsq","Adjr2","Cp","BIC")
 data_lm_stat
 
-step(data_lm)
+# trying to remove things from linear model but doesn't work at all, says all needed.
+step(data_lm) 
 
 # getting mse for linear model
 data_lm_yhat = predict.lm(data_lm, newdata = data_global[-train,])
 data_lm_test = data_global[-train,"Global_Sales"]
-mean((data_lm_yhat-data_lm_test)^2)
+lm_mse = mean((data_lm_yhat-data_lm_test$Global_Sales)^2)
+lm_mse
 
 # Random Forest Model -----------------------------------------------------
 
 # Changed from regular tree to randomforest 
 library(randomForest)
-set.seed(111)
 train = sample(1:nrow(data_global),nrow(data_global)*.80)
-data_randomforest = randomForest(Global_Sales~.-User_Count -Critic_Count, data = data_global, subset = train,importance = TRUE)
+data_randomforest = randomForest(Global_Sales~., data = data_global, subset = train,importance = TRUE)
 data_randomforest
 varImpPlot(data_randomforest)
 
 data_randomforest_yhat = predict(data_randomforest, newdata = data_global[-train,])
 data_randomforest_test = data_global[-train,"Global_Sales"]
-mean((data_randomforest_yhat-data_randomforest_test$Global_Sales)^2)
-
+random_forest_mse = mean((data_randomforest_yhat-data_randomforest_test$Global_Sales)^2)
+random_forest_mse
 
