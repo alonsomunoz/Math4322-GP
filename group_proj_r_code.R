@@ -27,7 +27,7 @@ table(data_clean$Year_of_Release)
 ##, 14 removes user count, 15 removes developer
 data_global = subset(data_clean, select = -c(1,5,6,7,8,9,12,14,15))
 par(mfrow = c(2,2))
-set.seed(1241)
+set.seed(1241123123)
 
 # Predictors  ---  Critic_Score+Platform+Genre+Year_of_Release+Publisher
 train = sample(1:nrow(data_global),nrow(data_global)*.80)
@@ -43,9 +43,12 @@ plot(data_lm)
 # getting mse for linear model when using log(global_sales)
 data_lm_yhat = predict.lm(data_lm, newdata = data_global[-train,])
 data_lm_test = data_global[-train,"Global_Sales"]
-lm_mse = mean((data_lm_yhat-data_lm_test$Global_Sales)^2)
-lm_mse
+lm_mse = mean((log(data_lm_test$Global_Sales)-data_lm_yhat)^2)
+lm_mse_true = sqrt(exp(lm_mse)) ## true mse hopefully
+lm_mse_true
 
+
+# trying polynomial stuff -------------------------------------------------
 
 # trying to do some polynomials for numeric predictors just critic score
 ploy_lm_mse = rep(0,5)
@@ -86,6 +89,6 @@ varImpPlot(data_randomforest)
 
 data_randomforest_yhat = predict(data_randomforest, newdata = data_global[-train,])
 data_randomforest_test = data_global[-train,"Global_Sales"]
-random_forest_mse = mean((data_randomforest_yhat-data_randomforest_test$Global_Sales)^2)
+random_forest_mse = mean((data_randomforest_test$Global_Sales-data_randomforest_yhat)^2)
 random_forest_mse
 
