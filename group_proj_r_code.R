@@ -40,5 +40,8 @@ varImpPlot(data_randomforest)
 # Question Two ------------------------------------------------------------
 
 data_success = data_global
-data_success$Global_Sales <- ifelse(data_success$Global_Sales > 1, 1,0)
-data_success$Global_Sales <- factor(data_success$Global_Sales, levels = c(0,1))
+data_success$Success <- ifelse(data_success$Global_Sales > 1, 1,0)
+data_success$Success = as.factor(data_success$Success)
+
+data_glm = glm(Success~., data= data_success, family = "binomial")
+summary(data_glm)
