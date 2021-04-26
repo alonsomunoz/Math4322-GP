@@ -21,6 +21,16 @@ summary(data_lm)
 par(mfrow = c(2,2))
 plot(data_lm)
 
+step(data_lm)
+
+library(leaps)
+data_lm_reg = regsubsets(Global_Sales~., data = data_global)
+data_lm_res = summary(data_lm_reg )
+data_lm_res 
+data_lm_stat = cbind(data_lm_res$rsq, data_lm_res$adjr2, data_lm_res$cp,data_lm_res$bic)
+colnames(data_lm_stat) = c("rsq","Adjr2","Cp","BIC")
+data_lm_stat
+
 # Changed from regualr tree to randomforest 
 library(randomForest)
 set.seed(111)
