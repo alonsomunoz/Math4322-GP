@@ -22,7 +22,6 @@ table(data_clean$Year_of_Release)
 
 # Linear model ------------------------------------------------------------
 
-
 ## 1 removes Name, 5 removes Publisher, 6 removes na sales, 7 removes eu sales
 ##, 8 removes jp sales, 9 removes other sales,12 removes critic count
 ##, 14 removes user count, 15 removes developer
@@ -36,6 +35,19 @@ data_lm = lm(Global_Sales~., data = data_global,subset = train)
 summary(data_lm)
 plot(data_lm)
 
+## Converted the global_sales to log
+data_lm = lm(log(Global_Sales)~., data = data_global,subset = train)
+summary(data_lm)
+plot(data_lm)
+
+# getting mse for linear model
+data_lm_yhat = predict.lm(data_lm, newdata = data_global[-train,])
+data_lm_test = data_global[-train,"Global_Sales"]
+lm_mse = mean((data_lm_yhat-data_lm_test$Global_Sales)^2)
+lm_mse
+
+# Trying to use step function ---------------------------------------------
+
 # doing step function and stuff, trying to figure out best predictors
 library(leaps)
 data_lm_reg = regsubsets(Global_Sales~., data = data_global, really.big = TRUE)
@@ -47,12 +59,6 @@ data_lm_stat
 
 # trying to remove things from linear model but doesn't work at all, says all needed.
 step(data_lm) 
-
-# getting mse for linear model
-test <- data_global[-train,]
-data_lm_yhat = predict.lm(data_lm, newdata = test, na.rm=TRUE)
-lm_mse = mean((data_lm_yhat-test$Global_Sales)^2)
-lm_mse
 
 # Random Forest Model -----------------------------------------------------
 
