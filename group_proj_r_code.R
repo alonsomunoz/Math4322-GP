@@ -8,9 +8,12 @@ data_clean$Developer =  as.factor(data_clean$Developer)
 data_clean$Rating =  as.factor(data_clean$Rating)
 data_clean$User_Score =  as.double(data_clean$User_Score)
 
+# Question One ------------------------------------------------------------
+
 ## 1 removes Name, 5 removes Publisher, 6 removes na sales, 7 removes eu sales
 ##, 8 removes jp sales, 9 removes other sales, 15 removes developer
 data_global = subset(data_clean, select = -c(1,5,6,7,8,9,15))
+set.seed(10)
 
 # Predictors  ---  Critic_Score+Platform+Genre+Year_of_Release+Publisher
 data_lm = lm(Global_Sales~., data = data_global)
@@ -29,10 +32,13 @@ summary(data_tree)
 
 # Changed from regualr tree to randomforest 
 library(randomForest)
-set.seed(10)
 train = sample(1:nrow(data_global),nrow(data_global)*.80)
-p = ncol(data_global) - 1
 data_randomforest = randomForest(Global_Sales~., data = data_global, subset = train,importance = TRUE)
 data_randomforest
 varImpPlot(data_randomforest)
 
+# Question Two ------------------------------------------------------------
+
+data_success = data_global
+data_success$Global_Sales <- ifelse(data_success$Global_Sales > 1, 1,0)
+data_success$Global_Sales <- factor(data_success$Global_Sales, levels = c(0,1))
