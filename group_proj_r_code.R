@@ -27,7 +27,7 @@ table(data_clean$Year_of_Release)
 ##, 14 removes user count, 15 removes developer
 data_global = subset(data_clean, select = -c(1,5,6,7,8,9,12,14,15))
 par(mfrow = c(2,2))
-set.seed(1241123123)
+set.seed(12423)
 
 # Predictors  ---  Critic_Score+Platform+Genre+Year_of_Release+Publisher
 train = sample(1:nrow(data_global),nrow(data_global)*.80)
@@ -44,14 +44,15 @@ plot(data_lm)
 data_lm_yhat = predict.lm(data_lm, newdata = data_global[-train,])
 data_lm_test = data_global[-train,"Global_Sales"]
 lm_mse = mean((log(data_lm_test$Global_Sales)-data_lm_yhat)^2)
-lm_mse_true = sqrt(exp(lm_mse)) ## true mse hopefully
-lm_mse_true
+lm_mse
+lm_mse_sqrt_exp = sqrt(exp(lm_mse)) ## true mse hopefully
+lm_mse_sqrt_exp
 
 
 # trying polynomial stuff -------------------------------------------------
 
 # trying to do some polynomials for numeric predictors just critic score
-ploy_lm_mse = rep(0,5)
+poly_lm_mse = rep(0,5)
 for(i in 1:5){
   train = sample(1:nrow(data_global),nrow(data_global)*.80)
   poly_lm = lm(log(Global_Sales)~Platform+Year_of_Release+Genre+Rating+User_Score+poly(Critic_Score,i), data = data_global, subset = train)
@@ -59,7 +60,7 @@ for(i in 1:5){
   data_lm_yhat = predict.lm(data_lm, newdata = data_global[-train,])
   data_lm_test = data_global[-train,"Global_Sales"]
   lm_mse = mean((data_lm_yhat-data_lm_test$Global_Sales)^2)
-  ploy_lm_mse[i] = lm_mse
+  poly_lm_mse[i] = lm_mse
 }
 ploy_lm_mse
 # trying polynominals
@@ -83,12 +84,14 @@ step(data_lm)
 # Changed from regular tree to randomforest 
 library(randomForest)
 train = sample(1:nrow(data_global),nrow(data_global)*.80)
-data_randomforest = randomForest(Global_Sales~., data = data_global, subset = train,importance = TRUE)
+data_randomforest = randomForest(log(Global_Sales)~., data = data_global, subset = train,importance = TRUE)
 data_randomforest
 varImpPlot(data_randomforest)
 
 data_randomforest_yhat = predict(data_randomforest, newdata = data_global[-train,])
 data_randomforest_test = data_global[-train,"Global_Sales"]
-random_forest_mse = mean((data_randomforest_test$Global_Sales-data_randomforest_yhat)^2)
+random_forest_mse = mean((log(data_randomforest_test$Global_Sales)-data_randomforest_yhat)^2)
 random_forest_mse
+rf_mse_sqrt_exp = sqrt(exp(random_forest_mse))
+rf_mse_sqrt_exp
 
