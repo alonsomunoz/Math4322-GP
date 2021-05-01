@@ -17,8 +17,19 @@ data_clean = data_clean[data_clean$Year_of_Release != "1985",]
 data_clean = data_clean[data_clean$Year_of_Release != "1988",]
 data_clean = data_clean[data_clean$Year_of_Release != "1992",]
 data_clean = data_clean[data_clean$Year_of_Release != "1994",]
+data_clean = data_clean[data_clean$Year_of_Release != "N/A",]
 
-table(data_clean$Year_of_Release)
+
+## removing these because online have one or 2 of each and when spliting into train and test sets, it would not work
+## same reason like above
+data_clean = data_clean[data_clean$Rating != "AO",]
+data_clean = data_clean[data_clean$Rating != "K-A",]
+data_clean = data_clean[data_clean$Rating != "RP",]
+
+data_global = subset(data_clean, select = -c(1,5,6,7,8,9,12,14,15))
+
+table(data_global$Year_of_Release)
+table(data_global$Rating)
 
 # Linear model ------------------------------------------------------------
 
@@ -45,9 +56,8 @@ data_lm_yhat = predict.lm(data_lm, newdata = data_global[-train,])
 data_lm_test = data_global[-train,"Global_Sales"]
 lm_mse = mean((log(data_lm_test$Global_Sales)-data_lm_yhat)^2)
 lm_mse
-lm_mse_sqrt_exp = sqrt(exp(lm_mse)) ## true mse hopefully
+lm_mse_sqrt_exp = sqrt(exp(lm_mse)) ## just processing the mse
 lm_mse_sqrt_exp
-
 
 # trying polynomial stuff -------------------------------------------------
 
@@ -92,6 +102,48 @@ data_randomforest_yhat = predict(data_randomforest, newdata = data_global[-train
 data_randomforest_test = data_global[-train,"Global_Sales"]
 random_forest_mse = mean((log(data_randomforest_test$Global_Sales)-data_randomforest_yhat)^2)
 random_forest_mse
-rf_mse_sqrt_exp = sqrt(exp(random_forest_mse))
+rf_mse_sqrt_exp = sqrt(exp(random_forest_mse)) ## just processing the mse
 rf_mse_sqrt_exp
+
+# Paper Code --------------------------------------------------------------
+
+## Linear Model 10 times
+linear_model_10_mse = rep(0,10)
+
+for(i in 1:10){
+  seed = floor(runif(1, min=0, max=9999999))
+  set.seed(seed)
+  
+  train = sample(1:nrow(data_global),nrow(data_global)*.80)
+  data_lm = lm(log(Global_Sales)~., data = data_global,subset = train)
+  data_lm_yhat = predict.lm(data_lm, newdata = data_global[-train,])
+  data_lm_test = data_global[-train,"Global_Sales"]
+  linear_model_10_mse[i] = mean((log(data_lm_test$Global_Sales)-data_lm_yhat)^2)
+}
+
+## Linear model full
+
+lm_full = lm(log(Global_Sales)~., data = data_global)
+
+## Random Forest 10 times
+rf_model_10_mse = rep(0,10)
+
+for(i in 1:10){
+  seed = floor(runif(1, min=0, max=9999999))
+  set.seed(seed)
+  
+  train = sample(1:nrow(data_global),nrow(data_global)*.80)
+  data_randomforest = randomForest(log(Global_Sales)~., data = data_global, subset = train,importance = TRUE)
+  data_randomforest_yhat = predict(data_randomforest, newdata = data_global[-train,])
+  data_randomforest_test = data_global[-train,"Global_Sales"]
+  rf_model_10_mse[i] = mean((log(data_randomforest_test$Global_Sales)-data_randomforest_yhat)^2)
+}
+
+rf_full = randomForest(log(Global_Sales)~., data = data_global,importance = TRUE)
+
+
+
+
+
+
 
