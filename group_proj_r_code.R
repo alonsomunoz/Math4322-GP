@@ -30,8 +30,10 @@ data_clean = data_clean[data_clean$Rating != "RP",]
 
 data_global = subset(data_clean, select = -c(1,5,6,7,8,9,12,14,15))
 
-table(data_global$Year_of_Release)
-table(data_global$Rating)
+table(Video_Games_Sales_as_at_22_Dec_2016$Platform)
+table(Video_Games_Sales_as_at_22_Dec_2016$Genre)
+table(Video_Games_Sales_as_at_22_Dec_2016$Year_of_Release)
+table(Video_Games_Sales_as_at_22_Dec_2016$Rating)
 
 par(mfrow = c(2,2))
 set.seed(12423)
@@ -127,6 +129,7 @@ for(i in 1:10){
 ## Linear Model Full
 lm_full = lm(log(Global_Sales)~., data = data_global)
 summary(lm_full)
+mean(linear_model_10_mse)
 
 ## Random Forest 10 times
 rf_model_10_mse = rep(0,10)
@@ -143,5 +146,15 @@ for(i in 1:10){
 
 ## Random Forest Full Model
 rf_full = randomForest(log(Global_Sales)~., data = data_global,importance = TRUE)
-summary(rf_full)
+rf_full
+mean(rf_model_10_mse)
 
+
+
+
+
+
+## misc stuff
+library(tree)
+tree = tree(log(Global_Sales)~., data = data_global)
+step(lm_full)
