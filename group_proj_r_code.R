@@ -28,6 +28,9 @@ data_clean = data_clean[data_clean$Rating != "AO",]
 data_clean = data_clean[data_clean$Rating != "K-A",]
 data_clean = data_clean[data_clean$Rating != "RP",]
 
+## 1 removes Name, 5 removes Publisher, 6 removes na sales, 7 removes eu sales
+##, 8 removes jp sales, 9 removes other sales,12 removes critic count
+##, 14 removes user count, 15 removes developer
 data_global = subset(data_clean, select = -c(1,5,6,7,8,9,12,14,15))
 
 table(Video_Games_Sales_as_at_22_Dec_2016$Platform)
@@ -39,10 +42,6 @@ par(mfrow = c(2,2))
 set.seed(12423)
 
 # Linear model ------------------------------------------------------------
-
-## 1 removes Name, 5 removes Publisher, 6 removes na sales, 7 removes eu sales
-##, 8 removes jp sales, 9 removes other sales,12 removes critic count
-##, 14 removes user count, 15 removes developer
 
 # Predictors  ---  Critic_Score+Platform+Genre+Year_of_Release+Publisher
 train = sample(1:nrow(data_global),nrow(data_global)*.80)
@@ -80,6 +79,8 @@ ploy_lm_mse
 # trying polynominals
 
 # Trying to use step function ---------------------------------------------
+
+## 
 
 # doing step function and stuff, trying to figure out best predictors
 library(leaps)
@@ -127,9 +128,12 @@ for(i in 1:10){
 }
 
 ## Linear Model Full
-lm_full = lm(log(Global_Sales)~., data = data_global)
+lm_full = lm(log(Global_Sales)~.,data = data_global)
 summary(lm_full)
+linear_model_10_mse
 mean(linear_model_10_mse)
+
+step(lm_full)
 
 ## Random Forest 10 times
 rf_model_10_mse = rep(0,10)
@@ -147,6 +151,7 @@ for(i in 1:10){
 ## Random Forest Full Model
 rf_full = randomForest(log(Global_Sales)~., data = data_global,importance = TRUE)
 rf_full
+rf_model_10_mse
 mean(rf_model_10_mse)
 
 
