@@ -20,8 +20,9 @@ data_clean = data_clean[data_clean$Year_of_Release != "1994",]
 data_clean = data_clean[data_clean$Year_of_Release != "N/A",]
 
 
-## removing these because online have one or 2 of each and when spliting into train and test sets, it would not work
-## same reason like above
+## removing these because when spliting into train and test sets, the train set oesn't have that 
+## category while the testing set does and no prediction can be made since the training set never
+## had that specific rating.
 data_clean = data_clean[data_clean$Rating != "AO",]
 data_clean = data_clean[data_clean$Rating != "K-A",]
 data_clean = data_clean[data_clean$Rating != "RP",]
@@ -107,12 +108,13 @@ rf_mse_sqrt_exp
 
 # Paper Code --------------------------------------------------------------
 
+seeds = floor(runif(10, min=0, max=9999999))
+
 ## Linear Model 10 times
 linear_model_10_mse = rep(0,10)
 
 for(i in 1:10){
-  seed = floor(runif(1, min=0, max=9999999))
-  set.seed(seed)
+  set.seed(seeds[i])
   
   train = sample(1:nrow(data_global),nrow(data_global)*.80)
   data_lm = lm(log(Global_Sales)~., data = data_global,subset = train)
@@ -122,15 +124,13 @@ for(i in 1:10){
 }
 
 ## Linear Model Full
-
 lm_full = lm(log(Global_Sales)~., data = data_global)
 
 ## Random Forest 10 times
 rf_model_10_mse = rep(0,10)
 
 for(i in 1:10){
-  seed = floor(runif(1, min=0, max=9999999))
-  set.seed(seed)
+  set.seed(seeds[i])
   
   train = sample(1:nrow(data_global),nrow(data_global)*.80)
   data_randomforest = randomForest(log(Global_Sales)~., data = data_global, subset = train,importance = TRUE)
@@ -141,10 +141,4 @@ for(i in 1:10){
 
 ## Random Forest Full Model
 rf_full = randomForest(log(Global_Sales)~., data = data_global,importance = TRUE)
-
-
-
-
-
-
 
