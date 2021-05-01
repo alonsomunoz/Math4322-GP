@@ -31,14 +31,14 @@ data_global = subset(data_clean, select = -c(1,5,6,7,8,9,12,14,15))
 table(data_global$Year_of_Release)
 table(data_global$Rating)
 
+par(mfrow = c(2,2))
+set.seed(12423)
+
 # Linear model ------------------------------------------------------------
 
 ## 1 removes Name, 5 removes Publisher, 6 removes na sales, 7 removes eu sales
 ##, 8 removes jp sales, 9 removes other sales,12 removes critic count
 ##, 14 removes user count, 15 removes developer
-data_global = subset(data_clean, select = -c(1,5,6,7,8,9,12,14,15))
-par(mfrow = c(2,2))
-set.seed(12423)
 
 # Predictors  ---  Critic_Score+Platform+Genre+Year_of_Release+Publisher
 train = sample(1:nrow(data_global),nrow(data_global)*.80)
@@ -121,7 +121,7 @@ for(i in 1:10){
   linear_model_10_mse[i] = mean((log(data_lm_test$Global_Sales)-data_lm_yhat)^2)
 }
 
-## Linear model full
+## Linear Model Full
 
 lm_full = lm(log(Global_Sales)~., data = data_global)
 
@@ -139,6 +139,7 @@ for(i in 1:10){
   rf_model_10_mse[i] = mean((log(data_randomforest_test$Global_Sales)-data_randomforest_yhat)^2)
 }
 
+## Random Forest Full Model
 rf_full = randomForest(log(Global_Sales)~., data = data_global,importance = TRUE)
 
 
