@@ -1,6 +1,7 @@
 # Cleaning the file from missing data and setting variables to right type
 data_clean = na.omit(Video_Games_Sales_as_at_22_Dec_2016)
 data_clean$Platform = as.factor(data_clean$Platform)
+##data_clean$Platform <- factor(data_clean$Platform, levels = c("2600","3DO","3DS","DC","DS","GB","GBA","GC","GEN","GG","N64","NES","NG","PC","PCFX","PS","PS2","PS3","PS4","PSP","PSV","SAT","SCD","SNES","TG16","Wii","WiiU","WS","X360","XB","XOne" ), ordered= TRUE)
 data_clean$Year_of_Release = as.factor(data_clean$Year_of_Release)
 data_clean$Genre =  as.factor(data_clean$Genre)
 data_clean$Publisher =  as.factor(data_clean$Publisher)
@@ -125,6 +126,7 @@ for(i in 1:10){
 
 ## Linear Model Full
 lm_full = lm(log(Global_Sales)~., data = data_global)
+summary(lm_full)
 
 ## Random Forest 10 times
 rf_model_10_mse = rep(0,10)
@@ -141,4 +143,5 @@ for(i in 1:10){
 
 ## Random Forest Full Model
 rf_full = randomForest(log(Global_Sales)~., data = data_global,importance = TRUE)
+summary(rf_full)
 
