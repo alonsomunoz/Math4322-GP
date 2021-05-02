@@ -20,7 +20,6 @@ data_clean = data_clean[data_clean$Year_of_Release != "1992",]
 data_clean = data_clean[data_clean$Year_of_Release != "1994",]
 data_clean = data_clean[data_clean$Year_of_Release != "N/A",]
 
-
 ## removing these because when spliting into train and test sets, the train set oesn't have that 
 ## category while the testing set does and no prediction can be made since the training set never
 ## had that specific rating.

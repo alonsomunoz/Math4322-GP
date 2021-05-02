@@ -12,10 +12,22 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 ```{r,message=FALSE,warning=FALSE,results='hide'}
-library(randomForest)
+library(randomForest) # testing stuff
 load("~/Desktop/paper.RData")
 ```
 ```{r}
 varImpPlot(rf_full)
 summary(lm_full)
 ```
+
+## Introduction
+fasdfas  
+
+## Linear Model
+asdfasd  
+
+## Random Forest Model
+asdfasd  
+
+## Conclusion
+asdfasdf  
