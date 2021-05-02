@@ -151,15 +151,6 @@ for(i in 1:10){
 ## Random Forest Full Model
 rf_full = randomForest(log(Global_Sales)~., data = data_global,importance = TRUE)
 rf_full
+varImpPlot(rf_full)
 rf_model_10_mse
 mean(rf_model_10_mse)
-
-
-
-
-
-
-## misc stuff
-library(tree)
-tree = tree(log(Global_Sales)~., data = data_global)
-step(lm_full)
