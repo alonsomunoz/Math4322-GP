@@ -32,6 +32,8 @@ data_clean = data_clean[data_clean$Rating != "RP",]
 ##, 14 removes user count, 15 removes developer
 data_global = subset(data_clean, select = -c(1,5,6,7,8,9,12,14,15))
 
+data_global$Year_of_Release = as.numeric(data_global$Year_of_Release)
+
 table(Video_Games_Sales_as_at_22_Dec_2016$Platform)
 table(Video_Games_Sales_as_at_22_Dec_2016$Genre)
 table(Video_Games_Sales_as_at_22_Dec_2016$Year_of_Release)
