@@ -17,7 +17,7 @@ For our dataset, we chose to work with “Video Game Sales with Ratings” (http
 
 Name, Platform, Year_of_Release, Genre, Publisher, NA_Sales, EU_Sales, JP_Sales, Other_Sales, Global_Sales, Critic_Score, Critic_Count, User_Score, User_Count, Developer, and Rating.
 
-Among these variables, Platform, Genre, and Rating are further broken up into sub-levels because we used as.factor():
+Among these, Platform, Genre, and Rating are further broken up into sub-levels because we used as.factor():
 
 Platform: 2600, 3DO, 3DS, DC, DS, GB, GBA, GC, GEN, GG, N64, NES, NG, PC, PCFX,  PS, PS2, PS3, PS4, PSP, PSV, SAT, SCD, SNES, TG16, Wii, WiiU, WS,  X360, XB, XOne
 
@@ -73,6 +73,7 @@ Another consideration we had to account for was that our data was not normally d
 
 We had to remove observations that contained certain sublevels from Ratings as some of those observations would end up in the testing set and not the training set because they were too few in number. If we did not remove them, the model would encounter data that was not accounted for in the training set, causing errors to occur.
 
+We also tried using the step function to remove any unnecessary variables, but none were removed suggesting that all of the variables were needed in the model.
 
 ```{r,message=FALSE,warning=FALSE,results='hide'}
 library(randomForest) # Loading in libraries       (Alonso Munoz)
@@ -87,7 +88,6 @@ linear_model_10_mse = rep(0,10)
 
 for(i in 1:10){
   set.seed(seeds[i])
-  
   train = sample(1:nrow(data_global),nrow(data_global)*.80)
   data_lm = lm(log(Global_Sales)~., data = data_global,subset = train)
   data_lm_yhat = predict.lm(data_lm, newdata = data_global[-train,])
@@ -106,19 +106,15 @@ The overall p-value of the model is < 2.2e-16 which is lower than $\alpha$ at $\
 
 We used the summary of our linear regression model to determine each variable’s effect on Global_Sales. In the model with the presence of the other predictors:  
 
-Platform(DC, GBA, GC, PC, PSV, Wii, XB), Genre(Adventure, Puzzle, Sports, Strategy), Critic_Score, User-Score, and Rating(E10+, T) were denoted as extremely significant ($***$).  
-
-GenreRole-Playing and Platform(XOne, PSP) were considered very significant ($**$).  
-
-Platform(PS3, PS4) and GenreRacing were labeled as significant ($*$).   
+* Platform(DC, GBA, GC, PC, PSV, Wii, XB), Genre(Adventure, Puzzle, Sports, Strategy), Critic_Score, User-Score, and Rating(E10+, T) were denoted as extremely significant ($***$).
+* GenreRole-Playing and Platform(XOne, PSP) were considered very significant ($**$).
+* Platform(PS3, PS4) and GenreRacing were labeled as significant ($*$).   
 
 Of these, Critic_Score, User_Score and Platform_PC had by far the lowest p-values (< 2e-16) and so we expect that they are the most important predictors of a video game’s global sales.
 
-The R-squared value of the model is 0.3458, meaning that the model explains 34.58% of the variability of Global_Sales around the mean.
-
 Using log(Global_Sales), all plots (Residuals, Normal QQ, Standardized Residuals, and Extreme Values) appeared to follow the assumptions.
 
-The mean test MSE for the linear regression model was 1.305145.
+The R-squared value of the model is 0.3458, meaning that the model explains 34.58% of the variability of Global_Sales around the mean. The mean test MSE for the linear regression model was 1.305145.
 
 ## Random Forest Model
 (Alonso Munoz, Andrew-Son Le)  
@@ -133,7 +129,7 @@ The disadvantages of the random forest model are that it can be more computation
 
 The equation of the Random Forest Model is:
 
-Random Forest model - Global_Sales ~ Platform + Year_of_Release + Genre + Critic_Score + User_Score + Rating
+Global_Sales ~ Platform + Year_of_Release + Genre + Critic_Score + User_Score + Rating
 
 (Jay Nguyen, Alonso Munoz, Andrew-Son Le)  
 
@@ -147,10 +143,8 @@ rf_model_10_mse = rep(0,10)
 
 for(i in 1:10){
   set.seed(seeds[i])
-  
   train = sample(1:nrow(data_global),nrow(data_global)*.80)
-  data_randomforest = randomForest(log(Global_Sales)~., data = data_global, 
-                                   subset = train,importance = TRUE)
+  data_randomforest = randomForest(log(Global_Sales)~., data = data_global,subset = train)
   data_randomforest_yhat = predict(data_randomforest, newdata = data_global[-train,])
   data_randomforest_test = data_global[-train,"Global_Sales"]
   rf_model_10_mse[i] = mean((log(data_randomforest_test$Global_Sales)-data_randomforest_yhat)^2)
@@ -166,9 +160,7 @@ varImpPlot(rf_full)
 
 The variable importance plot (varImpPlot) shows that Critic_Score is the most important variable, followed by Platform. The predictors, in order from most important to least, are Critic_Score, Platform, Genre, Year_of_Release, Rating, and finally User_Score.
 
-The % Var explained is 42.6, meaning that 42.6% of the variation is explained by the random forest tree.
-
-The mean test MSE for the random forest model was 1.143965.
+The % Var explained is 42.6, meaning that 42.6% of the variation is explained by the random forest model. The mean test MSE for the random forest model was 1.143965.
 
 ## Conclusion
 
@@ -179,3 +171,5 @@ The linear regression model is more useful in seeing how the predictors affect G
 The random forest model is better for figuring out which variables are more important in determining the response variable. From the random forest’s varImpPlot, we learned that Critic_Score is by far the most important predictor with Platform being the only other predictor with notable significance. User_Score had the least importance which surprised us, especially considering how it was deemed extremely significant by the linear regression model.
 
 Drawing from both of our models, we can conclude that Critic_Score is the most telling predictor of a video game’s global sales.
+
+For additional information and code, please see https://github.com/alonsomunoz/Math4322-GP 

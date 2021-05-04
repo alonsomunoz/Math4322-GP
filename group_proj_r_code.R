@@ -153,7 +153,7 @@ for(i in 1:10){
   set.seed(seeds[i])
   
   train = sample(1:nrow(data_global),nrow(data_global)*.80)
-  data_randomforest = randomForest(log(Global_Sales)~., data = data_global, subset = train,importance = TRUE)
+  data_randomforest = randomForest(log(Global_Sales)~., data = data_global, subset = train)
   data_randomforest_yhat = predict(data_randomforest, newdata = data_global[-train,])
   data_randomforest_test = data_global[-train,"Global_Sales"]
   rf_model_10_mse[i] = mean((log(data_randomforest_test$Global_Sales)-data_randomforest_yhat)^2)
