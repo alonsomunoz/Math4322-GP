@@ -136,7 +136,9 @@ for(i in 1:10){
 }
 
 ## Linear Model Full
-lm_full = lm(log(Global_Sales)~.,data = data_global)
+lm_full = lm(Global_Sales~.,data = data_global)
+plot(lm_full)
+
 summary(lm_full)
 linear_model_10_mse
 mean(linear_model_10_mse)
