@@ -25,7 +25,7 @@ Genre: Action,     Adventure, Fighting, Misc, Platform, Puzzle, Racing, Role-Pla
 
 Rating:  AO, E, E10+, EC, K-A, M, RP, T
 
-Before working with the data, we had to clean the dataset using na.omit due to the presence of observations that were missing either Critic_Score, Critic_Count, User_Score, User_Count, and/or Rating. After this, we were left with 6819 (~7000) observations.
+Before working with the data, we had to clean the dataset using na.omit due to the presence of observations that were missing either Critic_Score, Critic_Count, User_Score, User_Count, and/or Rating. After this, we were left with 6947 (~7000) observations.
 
 (Jay Nguyen, Andrew-Son Le)  
 
@@ -110,7 +110,7 @@ We used the summary of our linear regression model to determine each variable’
 * GenreRole-Playing and Platform(XOne, PSP) were considered very significant ($**$).
 * Platform(PS3, PS4) and GenreRacing were labeled as significant ($*$).   
 
-Of these, Critic_Score, User_Score and Platform_PC had by far the lowest p-values (< 2e-16) and so we expect that they are the most important predictors of a video game’s global sales.
+Of these, Critic_Score, User_Score and PlatformPC had by far the lowest p-values (< 2e-16) and so we expect that they are the most important predictors of a video game’s global sales.
 
 Using log(Global_Sales), all plots (Residuals, Normal QQ, Standardized Residuals, and Extreme Values) appeared to follow the assumptions.
 
@@ -119,7 +119,7 @@ The R-squared value of the model is 0.3458, meaning that the model explains 34.5
 ## Random Forest Model
 (Alonso Munoz, Andrew-Son Le)  
 
-Random forests are similar to bagging but add a small tweak in order to further improve as a model. Random forests grow B large un-pruned trees, but only pick a random subset of m ~$\sqrt{p}$ predictors instead of using the full set of p predictors like bagging does. This tweak leads to decorrelating the bagged trees, which means there is a lower chance that the same variable dominates each bagged tree. This tweak essentially makes random forests better than bagging and single decision trees, which led us to choose it for this project.
+Random forests are similar to bagging but add a small tweak in order to further improve as a model. Random forests grow B large un-pruned trees, but only pick a random subset of m ~$\sqrt{p}$ predictors instead of using the full set of p predictors like bagging does. This tweak leads to decorrelating the bagged trees, which means there is a lower chance that the same variable dominates each bagged tree. It essentially makes random forests better than bagging and single decision trees, which led us to choose it for this project.
 
 The advantages of the random forest model are that it generally has a lower test error compared to other models, avoids overfitting as long as there are enough trees being grown, decorrelates the bagged trees, and stabilizes the variance of the estimate. 
 
@@ -129,7 +129,7 @@ The disadvantages of the random forest model are that it can be more computation
 
 The equation of the Random Forest Model is:
 
-Global_Sales ~ Platform + Year_of_Release + Genre + Critic_Score + User_Score + Rating
+Global_Sales ~ Platform + Year_of_Release + Genre + Critic_Score + User_Score + Rating 
 
 (Jay Nguyen, Alonso Munoz, Andrew-Son Le)  
 
@@ -168,7 +168,7 @@ The % Var explained is 42.6, meaning that 42.6% of the variation is explained by
 
 The linear regression model is more useful in seeing how the predictors affect Global_Sales. Using the given coefficient values from summary(), we can determine whether predictors benefit or negatively impact Global_Sales. From the summary we see that User_Score, Critic_Score, and PlatformPC are the most significant variables to Global_Sales. 
 
-The random forest model is better for figuring out which variables are more important in determining the response variable. From the random forest’s varImpPlot, we learned that Critic_Score is by far the most important predictor with Platform being the only other predictor with notable significance. User_Score had the least importance which surprised us, especially considering how it was deemed extremely significant by the linear regression model.
+The random forest model is better for figuring out which variables are more important in determining the response variable, Global_Sales. From the random forest’s varImpPlot, we learned that Critic_Score is by far the most important predictor with Platform being the only other predictor with notable significance. User_Score had the least importance which surprised us, especially considering how it was deemed extremely significant by the linear regression model.
 
 Drawing from both of our models, we can conclude that Critic_Score is the most telling predictor of a video game’s global sales.
 
